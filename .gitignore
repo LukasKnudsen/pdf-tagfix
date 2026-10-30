@@ -1,10 +1,10 @@
-# Virtuelt miljø
+# Virtual environment
 .venv/
 
-# Testfiler (PDF'er kan indeholde fortrolige data)
+# Test files (PDFs may contain confidential data)
 samples/
 
-# Output fra værktøjet
+# Tool output
 out/
 *.fixed.pdf
 *.verapdf.xml
@@ -21,3 +21,6 @@ dist/
 .DS_Store
 .vscode/
 .idea/
+
+# Local-only Claude instructions
+CLAUDE.md
