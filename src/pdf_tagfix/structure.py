@@ -19,16 +19,16 @@ def font_sizes(runs: list[TextRun]) -> Counter[float]:
 
 
 def bold_state(runs: list[TextRun]) -> str | None:
-    """'fed', 'ikke-fed', 'delvis fed' or None when there is no text."""
+    """'bold', 'not bold', 'partly bold' or None when there is no text."""
     bold = sum(len(r.text.strip()) for r in runs if r.bold)
     total = sum(len(r.text.strip()) for r in runs)
     if total == 0:
         return None
     if bold == total:
-        return "fed"
+        return "bold"
     if bold == 0:
-        return "ikke-fed"
-    return "delvis fed"
+        return "not bold"
+    return "partly bold"
 
 
 @dataclass
@@ -177,7 +177,7 @@ class _Builder:
 def read_struct_tree(pdf: pikepdf.Pdf) -> StructTree:
     root = pdf.Root.get("/StructTreeRoot")
     if root is None:
-        raise NoStructTree("PDF'en har ingen tags (/StructTreeRoot mangler)")
+        raise NoStructTree("the PDF has no tags (/StructTreeRoot is missing)")
 
     content = collect_content(pdf)
     builder = _Builder(pdf, content, root.get("/RoleMap"))

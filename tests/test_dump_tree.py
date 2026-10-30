@@ -81,16 +81,16 @@ def test_struct_tree(tagged_pdf):
     assert h1.role == "H1"
     assert h1.text == "Overskrift"
     assert list(h1.font_sizes()) == [24]  # 12pt scaled 2x by Tm
-    assert h1.bold_state() == "fed"
+    assert h1.bold_state() == "bold"
 
     p = _find(tree.root, "P")
     assert p.text == "Brødtekst med"
-    assert p.bold_state() == "ikke-fed"
+    assert p.bold_state() == "not bold"
     assert list(p.font_sizes()) == [11]
 
     span = _find(tree.root, "Span")
     assert span.text == "fed del"  # TJ gap of -300 becomes a space
-    assert span.bold_state() == "fed"
+    assert span.bold_state() == "bold"
 
     assert [r.mcid for r in tree.missing] == [7]
     assert [k[2] for k in tree.unreferenced] == [3]
@@ -99,9 +99,9 @@ def test_struct_tree(tagged_pdf):
 def test_cli_output(tagged_pdf, capsys):
     assert main([str(tagged_pdf)]) == 0
     out = capsys.readouterr().out
-    assert 'Overskrift → H1  s.1  "Overskrift"  [24pt, fed]' in out
-    assert '"Brødtekst med"  [11pt, ikke-fed]' in out
-    assert "MCID 7 (s.1) findes ikke i indholdet" in out
+    assert 'Overskrift → H1  p.1  "Overskrift"  [24pt, bold]' in out
+    assert '"Brødtekst med"  [11pt, not bold]' in out
+    assert "MCID 7 (p.1) not found in page content" in out
 
 
 def test_untagged_pdf(tmp_path):

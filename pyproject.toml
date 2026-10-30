@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pdf-tagfix"
 version = "0.1.0"
-description = "Retter tilgængelighedsfejl i PDF'er, der allerede har tags"
+description = "Fixes accessibility problems in PDFs that already have tags"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["pikepdf>=10.13"]

@@ -1,7 +1,7 @@
 """Print the tag tree of a PDF with type, text, font size and bold for each element.
 
-    python -m pdf_tagfix.dump_tree fil.pdf
-    pdf-tagfix-tree fil.pdf --json
+    python -m pdf_tagfix.dump_tree file.pdf
+    pdf-tagfix-tree file.pdf --json
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ def _shorten(text: str, limit: int) -> str:
 
 
 def _style(runs: list[TextRun]) -> str:
-    """'11pt, ikke-fed' summary for a list of runs (dominant size first)."""
+    """'11pt, not bold' summary for a list of runs (dominant size first)."""
     sizes = font_sizes(runs)
     parts = []
     if sizes:
@@ -44,14 +44,14 @@ def _print_node(node: StructNode, depth: int, args, out) -> None:
     label = node.type + (f" → {node.role}" if node.role else "")
     bits = [label]
     if node.page is not None:
-        bits.append(f"s.{node.page}")
+        bits.append(f"p.{node.page}")
 
     text = node.text
     if text:
         bits.append(json.dumps(_shorten(text, args.max_text), ensure_ascii=False))
         bits.append(f"[{_style(node.runs)}]")
     for attr, value in (("alt", node.alt), ("actualtext", node.actual_text),
-                        ("lang", node.lang), ("titel", node.title)):
+                        ("lang", node.lang), ("title", node.title)):
         if value:
             bits.append(f"{attr}={json.dumps(_shorten(value, args.max_text), ensure_ascii=False)}")
     out.write(indent + "  ".join(bits) + "\n")
@@ -63,7 +63,7 @@ def _print_node(node: StructNode, depth: int, args, out) -> None:
             out.write(f"{indent}  <OBJR {kid.subtype}>\n")
         elif isinstance(kid, ContentRef):
             if not kid.found:
-                out.write(f"{indent}  ! MCID {kid.mcid} (s.{kid.page}) findes ikke i indholdet\n")
+                out.write(f"{indent}  ! MCID {kid.mcid} (p.{kid.page}) not found in page content\n")
             elif args.show_mcid:
                 kid_text = "".join(r.text for r in kid.runs).strip()
                 out.write(f"{indent}  · MCID {kid.mcid}: "
@@ -96,13 +96,13 @@ def _to_json(node) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Udskriv tag-træet i en PDF med tekst, skriftstørrelse og fed/ikke-fed.")
-    parser.add_argument("pdf", help="sti til en PDF med tags")
+        description="Print the tag tree of a PDF with text, font size and bold/not bold.")
+    parser.add_argument("pdf", help="path to a tagged PDF")
     parser.add_argument("--max-text", type=int, default=80, metavar="N",
-                        help="afkort tekst til N tegn (0 = ingen afkortning, standard 80)")
+                        help="truncate text to N characters (0 = no truncation, default 80)")
     parser.add_argument("--show-mcid", action="store_true",
-                        help="vis hver MCID-sekvens for sig under elementet")
-    parser.add_argument("--json", action="store_true", help="udskriv træet som JSON")
+                        help="show each MCID sequence separately under its element")
+    parser.add_argument("--json", action="store_true", help="print the tree as JSON")
     args = parser.parse_args(argv)
 
     try:
@@ -113,7 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"{args.pdf}: {exc}", file=sys.stderr)
         return 2
     except (pikepdf.PdfError, FileNotFoundError) as exc:
-        print(f"{args.pdf}: kan ikke åbne: {exc}", file=sys.stderr)
+        print(f"{args.pdf}: cannot open: {exc}", file=sys.stderr)
         return 1
 
     if args.json:
@@ -129,13 +129,13 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     out = sys.stdout
-    out.write(f"{args.pdf}  ({n_pages} sider, sprog: {tree.lang or 'ikke angivet'})\n\n")
+    out.write(f"{args.pdf}  ({n_pages} pages, language: {tree.lang or 'not set'})\n\n")
     for kid in tree.root.kids:
         if isinstance(kid, StructNode):
             _print_node(kid, 0, args, out)
     out.write("\n")
-    out.write(f"MCID'er uden indhold: {len(tree.missing)}   "
-              f"indhold uden tag (ikke refereret): {len(tree.unreferenced)}\n")
+    out.write(f"MCIDs without content: {len(tree.missing)}   "
+              f"untagged content (not referenced): {len(tree.unreferenced)}\n")
     return 0
 
 
