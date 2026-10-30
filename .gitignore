@@ -1,0 +1,23 @@
+# Virtuelt miljø
+.venv/
+
+# Testfiler (PDF'er kan indeholde fortrolige data)
+samples/
+
+# Output fra værktøjet
+out/
+*.fixed.pdf
+*.verapdf.xml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
