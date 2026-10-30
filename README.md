@@ -1,16 +1,16 @@
 # pdf-tagfix
 
-Et værktøj, der retter tilgængelighedsfejl i PDF'er, som **allerede har tags**.
-Det laver ikke tags fra bunden. Det analyserer den eksisterende tagstruktur, foreslår
-rettelser (fx tekst, der ser ud som en overskrift, men er tagget som `P`), lader et
-menneske gennemgå forslagene og skriver de godkendte rettelser tilbage i PDF'en.
-Til sidst valideres resultatet med veraPDF (PDF/UA).
+A tool that fixes accessibility problems in PDFs that **already have tags**. It
+doesn't create tags from scratch. Instead it analyses the existing tag structure and
+suggests fixes, for example text that looks like a heading but is tagged as `P`.
+A person reviews the suggestions, and the tool writes the approved fixes back to the
+PDF. Finally, the result is validated with veraPDF (PDF/UA).
 
-Status: første trin. Indtil videre kan værktøjet kun udskrive tag-træet.
+Status: early stage. So far the tool can only print the tag tree.
 
 ## Installation
 
-Kræver Python 3.11+.
+Requires Python 3.11+.
 
 ```sh
 python3 -m venv .venv
@@ -18,24 +18,24 @@ source .venv/bin/activate
 pip install --only-binary=pikepdf -e ".[dev]"
 ```
 
-`--only-binary=pikepdf` sikrer, at pip bruger en færdigbygget wheel. Uden flaget
-kan pip vælge en nyere version, der kun findes som kildekode, og så fejler
-byggeriet, fordi qpdf-headerne mangler. Det sker fx på Intel-Macs med Python 3.14.
+`--only-binary=pikepdf` makes pip use a prebuilt wheel. Without it, pip may pick a
+newer version that only exists as source. The build then fails because the qpdf
+headers are missing. This happens on Intel Macs with Python 3.14, for example.
 
-## Brug
+## Usage
 
-### Udskriv tag-træet
+### Print the tag tree
 
 ```sh
-pdf-tagfix-tree samples/rapport.pdf
-# eller
-python -m pdf_tagfix.dump_tree samples/rapport.pdf
+pdf-tagfix-tree samples/report.pdf
+# or
+python -m pdf_tagfix.dump_tree samples/report.pdf
 ```
 
-Eksempel på output:
+Example output (the tool's labels are in Danish):
 
 ```
-rapport.pdf  (1 sider, sprog: da)
+report.pdf  (1 sider, sprog: da)
 
 Document  lang="da"
   H1
@@ -51,46 +51,50 @@ Document  lang="da"
 MCID'er uden indhold: 0   indhold uden tag (ikke refereret): 0
 ```
 
-Hver linje viser:
+Each line shows:
 
-- **tag-type**. Ved brugerdefinerede typer vises også standardtypen fra RoleMap, fx `Overskrift → H1`.
-- **side**
-- **tekst** fra elementets egne marked-content-sekvenser (MCID'er). Tekst i
-  underelementer vises på underelementets egen linje.
-- **skriftstørrelse** i punkter, som den faktisk vises (`Tf`-størrelsen ganget med
-  tekst- og transformationsmatricen). Ved blandede størrelser kommer den
-  dominerende først, fx `12pt/9pt`.
-- **fed / ikke-fed / delvis fed**. Det afgøres ud fra fontnavnet (Bold, Black,
-  Semibold …), `/FontWeight`, ForceBold-flaget og "falsk fed" (render mode 2).
-- `alt`, `actualtext`, `lang` og `titel`, hvis de er sat.
+- **Tag type.** A custom type is also shown with its standard type from the RoleMap, e.g. `Overskrift → H1`.
+- **Page** (`s.` = side, page).
+- **Text** from the element's own marked-content sequences (MCIDs). Text in child
+  elements appears on the child's own line.
+- **Font size** in points, as it actually appears on the page (the `Tf` size
+  multiplied by the text and transformation matrices). When sizes are mixed, the
+  dominant one comes first, e.g. `12pt/9pt`.
+- **Bold**: `fed` (bold), `ikke-fed` (not bold) or `delvis fed` (partly bold). This
+  is decided from the font name (Bold, Black, Semibold …), `/FontWeight`, the
+  ForceBold flag, and "fake bold" (render mode 2).
+- `alt`, `actualtext`, `lang` and `titel` (title), if they are set.
 
-Linjer der starter med `!` er MCID'er, som tag-træet peger på, men som ikke findes
-i sidens indhold.
+Lines starting with `!` are MCIDs that the tag tree points to but that don't exist
+in the page content.
 
-Flag:
+The last line counts MCIDs referenced by the tree but missing from the content
+(`MCID'er uden indhold`) and content that no tag points to (`indhold uden tag`).
 
-| Flag | Betydning |
-|------|-----------|
-| `--max-text N` | afkort tekst til N tegn (0 = ingen afkortning, standard 80) |
-| `--show-mcid` | vis hver MCID-sekvens for sig, med egen størrelse og vægt |
-| `--json` | udskriv træet som JSON (til videre behandling) |
+Options:
 
-### Validering med veraPDF
+| Option | Meaning |
+|--------|---------|
+| `--max-text N` | truncate text to N characters (0 = no truncation, default 80) |
+| `--show-mcid` | show each MCID sequence separately, with its own size and weight |
+| `--json` | print the tree as JSON (for further processing) |
+
+### Validating with veraPDF
 
 ```sh
-~/verapdf/verapdf --flavour ua1 --format text fil.pdf
+~/verapdf/verapdf --flavour ua1 --format text file.pdf
 ```
 
-## Test
+## Tests
 
 ```sh
 pytest
 ```
 
-Testene bygger deres egne PDF'er og har ikke brug for filer i `samples/`.
+The tests build their own PDFs and don't need any files in `samples/`.
 
-## Mapper
+## Folders
 
-- `src/pdf_tagfix/` er koden.
-- `tests/` er testene.
-- `samples/` er dine egne test-PDF'er. Mappen er i `.gitignore`, fordi PDF'erne kan indeholde fortrolige data.
+- `src/pdf_tagfix/` holds the code.
+- `tests/` holds the tests.
+- `samples/` is for your own test PDFs. It's in `.gitignore` because the PDFs may contain confidential data.
