@@ -1,12 +1,14 @@
 # pdf-tagfix
 
-A tool that fixes accessibility problems in PDFs that already have tags. It
-doesn't create tags from scratch. Instead it analyses the existing tag structure and
-suggests fixes, for example text that looks like a heading but is tagged as `P`.
-A person reviews the suggestions, and the tool writes the approved fixes back to the
-PDF. Finally, the result is validated with veraPDF.
+A tool that fixes accessibility problems in PDFs that already have tags. It doesn't create tags from scratch. Instead it analyses the existing tag structure and suggests fixes, for example text that looks like a heading but is tagged as `P`. A person reviews the suggestions, and the tool writes the approved fixes back to the PDF. Finally, the result is validated with veraPDF.
 
 Status: Still early stage. So far the tool can only print the tag tree.
+
+## Why: the European Accessibility Act
+
+The [European Accessibility Act](https://eur-lex.europa.eu/eli/dir/2019/882/oj) (EAA, Directive (EU) 2019/882) has applied since 28 June 2025. It requires many products and services sold in the EU to be accessible, including the documents they provide, such as PDFs. The harmonised standard EN 301 549 builds on WCAG. PDF/UA (ISO 14289) is the established standard for accessible PDFs.
+
+pdf-tagfix helps fix common problems in tagged PDFs and checks the result against PDF/UA with veraPDF. A passing veraPDF report doesn't prove that a document meets the EAA. Some requirements, like meaningful alt text and a logical reading order, still need a person to check them.
 
 ## Installation
 
@@ -18,9 +20,7 @@ source .venv/bin/activate
 pip install --only-binary=pikepdf -e ".[dev]"
 ```
 
-`--only-binary=pikepdf` makes pip use a prebuilt wheel. Without it, pip may pick a
-newer version that only exists as source. The build then fails because the qpdf
-headers are missing. This happens on Intel Macs with Python 3.14, for example.
+`--only-binary=pikepdf` makes pip use a prebuilt wheel. Without it, pip may pick a newer version that only exists as source. The build then fails because the qpdf headers are missing. This happens on Intel Macs with Python 3.14, for example.
 
 ## Usage
 
@@ -55,21 +55,14 @@ Each line shows:
 
 - **Tag type.** A custom type is also shown with its standard type from the RoleMap, e.g. `Overskrift → H1`.
 - **Page** (`s.` = side, page).
-- **Text** from the element's own marked-content sequences (MCIDs). Text in child
-  elements appears on the child's own line.
-- **Font size** in points, as it actually appears on the page (the `Tf` size
-  multiplied by the text and transformation matrices). When sizes are mixed, the
-  dominant one comes first, e.g. `12pt/9pt`.
-- **Bold**: `fed` (bold), `ikke-fed` (not bold) or `delvis fed` (partly bold). This
-  is decided from the font name (Bold, Black, Semibold …), `/FontWeight`, the
-  ForceBold flag, and "fake bold" (render mode 2).
+- **Text** from the element's own marked-content sequences (MCIDs). Text in child elements appears on the child's own line.
+- **Font size** in points, as it actually appears on the page (the `Tf` size multiplied by the text and transformation matrices). When sizes are mixed, the dominant one comes first, e.g. `12pt/9pt`.
+- **Bold**: `fed` (bold), `ikke-fed` (not bold) or `delvis fed` (partly bold). This is decided from the font name (Bold, Black, Semibold …), `/FontWeight`, the ForceBold flag, and "fake bold" (render mode 2).
 - `alt`, `actualtext`, `lang` and `titel` (title), if they are set.
 
-Lines starting with `!` are MCIDs that the tag tree points to but that don't exist
-in the page content.
+Lines starting with `!` are MCIDs that the tag tree points to but that don't exist in the page content.
 
-The last line counts MCIDs referenced by the tree but missing from the content
-(`MCID'er uden indhold`) and content that no tag points to (`indhold uden tag`).
+The last line counts MCIDs referenced by the tree but missing from the content (`MCID'er uden indhold`) and content that no tag points to (`indhold uden tag`).
 
 Options:
 
