@@ -15,6 +15,7 @@ dev = ["pytest"]
 
 [project.scripts]
 pdf-tagfix-tree = "pdf_tagfix.dump_tree:main"
+pdf-tagfix-ui = "pdf_tagfix.server:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

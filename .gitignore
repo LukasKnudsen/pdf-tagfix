@@ -9,6 +9,9 @@ out/
 *.fixed.pdf
 *.verapdf.xml
 
+# UI
+node_modules/
+
 # Python
 __pycache__/
 *.py[cod]

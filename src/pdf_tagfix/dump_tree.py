@@ -14,8 +14,8 @@ import sys
 import pikepdf
 
 from .content import TextRun
-from .structure import (ContentRef, NoStructTree, ObjectRef, StructNode, bold_state,
-                        font_sizes, read_struct_tree)
+from .structure import (ContentRef, NoStructTree, ObjectRef, StructNode, StructTree,
+                        bold_state, font_sizes, read_struct_tree)
 
 
 def _fmt_size(size: float) -> str:
@@ -71,7 +71,7 @@ def _print_node(node: StructNode, depth: int, args, out) -> None:
                           f" [{_style(kid.runs)}]\n")
 
 
-def _to_json(node) -> dict:
+def node_to_json(node) -> dict:
     if isinstance(node, StructNode):
         sizes = node.font_sizes()
         return {
@@ -85,13 +85,24 @@ def _to_json(node) -> dict:
             "actual_text": node.actual_text,
             "lang": node.lang,
             "title": node.title,
-            "kids": [_to_json(k) for k in node.kids if not isinstance(k, ContentRef)],
+            "kids": [node_to_json(k) for k in node.kids if not isinstance(k, ContentRef)],
             "mcids": [dataclasses.asdict(k) | {"key": None}
                       for k in node.kids if isinstance(k, ContentRef)],
         }
     if isinstance(node, ObjectRef):
         return {"objr": node.subtype, "page": node.page}
     raise TypeError(node)
+
+
+def tree_to_json(tree: StructTree, file: str, n_pages: int) -> dict:
+    return {
+        "file": file,
+        "pages": n_pages,
+        "lang": tree.lang,
+        "root": node_to_json(tree.root),
+        "missing_mcids": len(tree.missing),
+        "unreferenced_mcids": len(tree.unreferenced),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -117,14 +128,7 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     if args.json:
-        json.dump({
-            "file": args.pdf,
-            "pages": n_pages,
-            "lang": tree.lang,
-            "root": _to_json(tree.root),
-            "missing_mcids": len(tree.missing),
-            "unreferenced_mcids": len(tree.unreferenced),
-        }, sys.stdout, ensure_ascii=False, indent=2)
+        json.dump(tree_to_json(tree, args.pdf, n_pages), sys.stdout, ensure_ascii=False, indent=2)
         print()
         return 0
 
