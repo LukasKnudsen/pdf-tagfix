@@ -1,0 +1,185 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font: 14px/1.4 system-ui, -apple-system, sans-serif;
+  color: #1d1d1f;
+  background: #f5f5f7;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+header h1 {
+  font-size: 16px;
+  margin: 0;
+}
+
+.folder {
+  margin-left: auto;
+  color: #777;
+  font-size: 12px;
+}
+
+.summary {
+  display: flex;
+  gap: 16px;
+  padding: 6px 16px;
+  font-size: 13px;
+  background: #fafafa;
+  border-bottom: 1px solid #ddd;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.tree {
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+  background: #fff;
+  border-right: 1px solid #ddd;
+}
+
+.viewer {
+  flex: 1;
+  display: flex;
+}
+
+.viewer iframe {
+  flex: 1;
+  border: 0;
+}
+
+.tree ul {
+  list-style: none;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.tree > ul {
+  padding-left: 0;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.row:hover {
+  background: #eef3fb;
+}
+
+.row.has-issue {
+  background: #fff4f2;
+}
+
+.toggle {
+  width: 16px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.tag {
+  font-weight: 600;
+  font-family: ui-monospace, monospace;
+}
+
+.tag.heading {
+  color: #0a5bc4;
+}
+
+.role {
+  font-weight: 400;
+  color: #666;
+}
+
+.page,
+.muted {
+  color: #888;
+  font-size: 12px;
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 420px;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: #eee;
+}
+
+.chip.bold {
+  background: #dfe9fb;
+  font-weight: 600;
+}
+
+.attr {
+  font-size: 12px;
+  color: #2d7d46;
+}
+
+.issue {
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: #d93025;
+  color: #fff;
+}
+
+.mcid {
+  font-size: 12px;
+  color: #555;
+  padding: 1px 4px 1px 26px;
+  white-space: nowrap;
+}
+
+.mcid.missing {
+  color: #d93025;
+}
+
+.warn {
+  color: #b06000;
+  font-weight: 600;
+}
+
+.error {
+  color: #d93025;
+  font-weight: 600;
+}
+
+.error-box {
+  padding: 12px;
+  border-radius: 6px;
+  background: #fde7e6;
+  color: #a1160a;
+}
