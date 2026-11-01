@@ -86,8 +86,17 @@ pytest
 
 The tests build their own PDFs and don't need any files in `samples/`.
 
+### Sample PDFs for manual testing
+
+```sh
+python scripts/make_samples.py samples
+```
+
+This generates ten tagged PDFs, each with known problems: fake headings, broken heading hierarchy, figures without `/Alt`, missing `/Lang`, missing MCIDs and untagged content, wrong list and table structure, plus a clean baseline (`01_clean_report.pdf`) that passes veraPDF PDF/UA-1 and an untagged file that should be rejected. Each function in the script has a docstring describing what is wrong in its file. The script embeds Arial from the macOS system fonts, so it only runs on macOS.
+
 ## Folders
 
 - `src/pdf_tagfix/` holds the code.
 - `tests/` holds the tests.
+- `scripts/` holds helper scripts, such as the sample generator.
 - `samples/` is for your own test PDFs. It's in `.gitignore` because the PDFs may contain confidential data.
