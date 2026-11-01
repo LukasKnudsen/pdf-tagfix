@@ -72,6 +72,27 @@ Options:
 | `--show-mcid` | show each MCID sequence separately, with its own size and weight |
 | `--json` | print the tree as JSON (for further processing) |
 
+### Web UI
+
+A simple local UI that shows the tag tree next to the PDF. Click an element to jump to its page. Figures without `/Alt` and missing MCIDs are highlighted.
+
+Build it once (requires Node.js):
+
+```sh
+cd ui && npm install && npm run build && cd ..
+```
+
+Then start it:
+
+```sh
+pdf-tagfix-ui              # serves the PDFs in samples/
+pdf-tagfix-ui other/folder --port 8001
+```
+
+and open http://127.0.0.1:8000. The server only listens on localhost.
+
+When working on the UI itself, run `pdf-tagfix-ui` in one terminal and `npm run dev` in `ui/` in another, then open the address Vite prints. Changes reload instantly.
+
 ### Validating with veraPDF
 
 ```sh
@@ -99,4 +120,5 @@ This generates ten tagged PDFs, each with known problems: fake headings, broken 
 - `src/pdf_tagfix/` holds the code.
 - `tests/` holds the tests.
 - `scripts/` holds helper scripts, such as the sample generator.
+- `ui/` holds the React + TypeScript web UI (Vite).
 - `samples/` is for your own test PDFs. It's in `.gitignore` because the PDFs may contain confidential data.
