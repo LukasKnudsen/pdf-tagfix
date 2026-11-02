@@ -2,7 +2,7 @@
 
 A tool that fixes accessibility problems in PDFs that already have tags. It doesn't create tags from scratch. Instead it analyses the existing tag structure and suggests fixes, for example text that looks like a heading but is tagged as `P`. A person reviews the suggestions, and the tool writes the approved fixes back to the PDF. Finally, the result is validated with veraPDF.
 
-Status: Still early stage. So far the tool can only print the tag tree.
+**Status: Still early stage. So far the tool can only print the tag tree.**
 
 ## Why: the European Accessibility Act
 
