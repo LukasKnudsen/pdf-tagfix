@@ -122,8 +122,3 @@ This generates ten tagged PDFs, each with known problems: fake headings, broken 
 - `scripts/` holds helper scripts, such as the sample generator.
 - `ui/` holds the React + TypeScript web UI (Vite).
 - `samples/` is for your own test PDFs. It's in `.gitignore` because the PDFs may contain confidential data.
-
-## To be done:
-1. Edit coding
-2. Write Alt-text
-3. Improved UI
